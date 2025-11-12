@@ -2,11 +2,12 @@ package FrontTiendaRopa.FrontProyecto.webservicesclient;
 
 import FrontTiendaRopa.FrontProyecto.DTOs.ProductoDTO;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -14,44 +15,48 @@ public class ProductoApiClient {
 
     private final RestTemplate restTemplate;
 
-    @Value("${api.producto.base-url:http://localhost:8090/api}")
-    private String baseUrl;
+    @Value("${api.producto.base-url}")
+    private String baseUrl; // p.ej. http://localhost:8090/api
 
     public ProductoApiClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    // Listar todos los productos
+    // ==== LISTAR ====
     public List<ProductoDTO> getProductos() {
-        String url = baseUrl + "/productos/listar";
-        ProductoDTO[] productosArray = restTemplate.getForObject(url, ProductoDTO[].class);
-        return Arrays.asList(productosArray);
+        String url = baseUrl + "/productos";
+        ResponseEntity<ProductoDTO[]> resp = restTemplate.getForEntity(url, ProductoDTO[].class);
+        if (resp.getBody() == null) return Collections.emptyList();
+        return Arrays.asList(resp.getBody());
     }
 
-    // Obtener producto por ID
+    // ==== OBTENER POR ID ====
     public ProductoDTO getProductoById(Integer id) {
-        String url = baseUrl + "/productos/listarId?productoId=" + id;
+        String url = baseUrl + "/productos/" + id;
         return restTemplate.getForObject(url, ProductoDTO.class);
     }
 
-    // Crear producto
-    public void crearProducto(ProductoDTO producto) {
-        String url = baseUrl + "/productos/insertar";
-        restTemplate.postForObject(url, producto, Void.class);
+    // ==== CREAR ====
+    public ProductoDTO crearProducto(ProductoDTO producto) {
+        String url = baseUrl + "/productos";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<ProductoDTO> request = new HttpEntity<>(producto, headers);
+        return restTemplate.postForObject(url, request, ProductoDTO.class);
     }
 
-    // Actualizar producto
-    public void actualizarProducto(ProductoDTO producto) {
-        String url = baseUrl + "/productos/actualizar";
+    // ==== ACTUALIZAR ====
+    public void actualizarProducto(Integer id, ProductoDTO producto) {
+        String url = baseUrl + "/productos/" + id;
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<ProductoDTO> request = new HttpEntity<>(producto, headers);
         restTemplate.exchange(url, HttpMethod.PUT, request, Void.class);
     }
 
-    // Eliminar producto
+    // ==== ELIMINAR ====
     public void eliminarProducto(Integer id) {
-        String url = baseUrl + "/productos/eliminar/" + id;
+        String url = baseUrl + "/productos/" + id;
         restTemplate.delete(url);
     }
 }
