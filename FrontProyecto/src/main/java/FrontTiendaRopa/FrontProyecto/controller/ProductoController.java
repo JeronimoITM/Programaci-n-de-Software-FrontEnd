@@ -2,7 +2,6 @@ package FrontTiendaRopa.FrontProyecto.controller;
 
 import FrontTiendaRopa.FrontProyecto.DTOs.ProductoDTO;
 import FrontTiendaRopa.FrontProyecto.webservicesclient.ProductoApiClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,53 +9,38 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/front/productos")
-@CrossOrigin(origins = "*")
 public class ProductoController {
 
-    @Autowired
-    private ProductoApiClient productoApiClient;
+    private final ProductoApiClient productoApiClient;
 
-    // ----------- LISTAR TODOS -----------
+    public ProductoController(ProductoApiClient productoApiClient) {
+        this.productoApiClient = productoApiClient;
+    }
+
     @GetMapping
-    public ResponseEntity<List<ProductoDTO>> listarProductos() {
-        List<ProductoDTO> productos = productoApiClient.getProductos();
-        if (productos == null || productos.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(productos);
+    public ResponseEntity<List<ProductoDTO>> listar() {
+        return ResponseEntity.ok(productoApiClient.getProductos());
     }
 
-    // ----------- BUSCAR POR ID -----------
     @GetMapping("/{id}")
-    public ResponseEntity<?> obtenerProductoPorId(@PathVariable("id") Integer id) {
-        ProductoDTO producto = productoApiClient.getProductoById(id);
-        if (producto == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(producto);
+    public ResponseEntity<ProductoDTO> porId(@PathVariable Integer id) {
+        return ResponseEntity.ok(productoApiClient.getProductoById(id));
     }
 
-    // ----------- CREAR PRODUCTO -----------
     @PostMapping
-    public ResponseEntity<String> crearProducto(@RequestBody ProductoDTO producto) {
-        productoApiClient.crearProducto(producto);
-        return ResponseEntity.ok("Producto creado correctamente");
+    public ResponseEntity<ProductoDTO> crear(@RequestBody ProductoDTO dto) {
+        return ResponseEntity.ok(productoApiClient.crearProducto(dto));
     }
 
-    // ----------- ACTUALIZAR PRODUCTO -----------
     @PutMapping("/{id}")
-    public ResponseEntity<String> actualizarProducto(@PathVariable("id") Integer id,
-                                                     @RequestBody ProductoDTO producto) {
-        // Asignamos el ID recibido al DTO
-        producto.setProductoId(id);
-        productoApiClient.actualizarProducto(producto);
-        return ResponseEntity.ok("Producto actualizado correctamente");
+    public ResponseEntity<Void> actualizar(@PathVariable Integer id, @RequestBody ProductoDTO dto) {
+        productoApiClient.actualizarProducto(id, dto);
+        return ResponseEntity.noContent().build();
     }
 
-    // ----------- ELIMINAR PRODUCTO -----------
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> eliminarProducto(@PathVariable("id") Integer id) {
+    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         productoApiClient.eliminarProducto(id);
-        return ResponseEntity.ok("Producto eliminado correctamente");
+        return ResponseEntity.noContent().build();
     }
 }
