@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Cliente</title>
+    <style>
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          background: #e6f5ff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+        }
+        .card {
+          background: #ffffff;
+          border-radius: 16px;
+          box-shadow: 0 18px 45px rgba(15, 23, 42, 0.15);
+          padding: 28px 36px;
+          max-width: 640px;
+          width: 100%;
+        }
+        .card h1 {
+          margin: 0 0 8px;
+          font-size: 24px;
+          text-align: center;
+          color: #111827;
+        }
+        .card p.sub {
+          margin: 0 0 20px;
+          font-size: 14px;
+          color: #6b7280;
+          text-align: center;
+        }
+        .top-link {
+          text-align: center;
+          margin-bottom: 8px;
+          font-size: 13px;
+        }
+        .top-link a {
+          color: #4f46e5;
+          text-decoration: none;
+        }
+        .top-link a:hover { text-decoration: underline; }
+
+        .grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 16px 24px;
+          margin-bottom: 24px;
+        }
+        .field {
+          display: flex;
+          flex-direction: column;
+          font-size: 13px;
+          color: #4b5563;
+        }
+        .field input, .field select {
+          margin-top: 4px;
+          padding: 8px 10px;
+          border-radius: 8px;
+          border: 1px solid #d1d5db;
+          font-size: 14px;
+          outline: none;
+          transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .field input:focus, .field select:focus {
+          border-color: #4f46e5;
+          box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+        }
+        .full-row { grid-column: span 2; }
+        .btn-primary {
+          width: 100%;
+          padding: 10px 16px;
+          border-radius: 999px;
+          border: none;
+          background: #4f46e5;
+          color: white;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          margin-top: 4px;
+        }
+        .btn-primary:hover { background: #4338ca; }
+        .btn-danger {
+          width: 100%;
+          padding: 8px 14px;
+          border-radius: 999px;
+          border: none;
+          background: #dc2626;
+          color: white;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          margin-top: 6px;
+        }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-link {
+          display: inline-block;
+          margin-top: 16px;
+          font-size: 13px;
+          color: #4f46e5;
+          text-decoration: none;
+          text-align: center;
+        }
+        .btn-link:hover { text-decoration: underline; }
+        .divider {
+          margin: 20px 0;
+          border-top: 1px solid #e5e7eb;
+        }
+        .sub-title {
+          font-size: 15px;
+          font-weight: 600;
+          margin: 0 0 6px;
+          color: #111827;
+        }
+        .sub-small {
+          margin: 0 0 12px;
+          font-size: 13px;
+          color: #6b7280;
+        }
+
+        .success-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          justify-content: center;
+          margin-bottom: 8px;
+        }
+        .success-icon {
+          width: 30px;
+          height: 30px;
+          border-radius: 999px;
+          border: 2px solid #16a34a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #16a34a;
+          font-weight: bold;
+          font-size: 18px;
+        }
+        .summary-box {
+          background: #ecfdf3;
+          border-radius: 10px;
+          border: 1px solid #bbf7d0;
+          padding: 14px 16px;
+          font-size: 13px;
+          color: #374151;
+          line-height: 1.5;
+        }
+        .summary-row + .summary-row { margin-top: 4px; }
+        .label { font-weight: 600; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="card" id="cardRegistro">
+    <div class="top-link">
+        <a href="index.html">← Volver al menú principal</a>
+    </div>
+
+    <h1>Registro de Cliente (DTO)</h1>
+    <p class="sub">Ingrese los datos del cliente para registrarlo en el sistema.</p>
+
+    <!-- FORMULARIO REGISTRO -->
+    <form id="clienteForm">
+        <div class="grid">
+            <div class="field">
+                <label>Nombre completo</label>
+                <input type="text" id="cliNombre" required>
+            </div>
+            <div class="field">
+                <label>Teléfono</label>
+                <input type="text" id="cliTelefono">
+            </div>
+            <div class="field full-row">
+                <label>Email</label>
+                <input type="email" id="cliEmail" required>
+            </div>
+        </div>
+        <button type="submit" class="btn-primary">Registrar Cliente</button>
+    </form>
+
+    <!-- BLOQUE ELIMINAR -->
+    <div class="divider"></div>
+    <h2 class="sub-title">Eliminar cliente</h2>
+    <p class="sub-small">Seleccione un cliente existente para eliminarlo.</p>
+
+    <div class="field full-row">
+        <label>Cliente</label>
+        <select id="cliEliminarSelect">
+            <option value="">-- Seleccione --</option>
+        </select>
+    </div>
+    <button type="button" class="btn-danger" id="btnEliminarCliente">Eliminar cliente</button>
+</div>
+
+<!-- TARJETA DE CONFIRMACIÓN -->
+<div class="card hidden" id="cardConfirmacion">
+    <div class="success-header">
+        <div class="success-icon">✓</div>
+        <h1>¡Cliente Registrado!</h1>
+    </div>
+    <p class="sub">
+        Los datos del nuevo cliente han sido procesados correctamente:
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="summary-box">
+        <div class="summary-row">
+            <div><span class="label">Nombre:</span> <span id="resNombre"></span></div>
+        </div>
+        <div class="summary-row">
+            <div><span class="label">Teléfono:</span> <span id="resTelefono"></span></div>
+        </div>
+        <div class="summary-row">
+            <div><span class="label">Email:</span> <span id="resEmail"></span></div>
+        </div>
+    </div>
+
+    <a href="#" class="btn-link" id="btnVolver">← Volver a registrar</a><br>
+    <a href="index.html" class="btn-link">Volver al menú principal</a>
+</div>
+
+<script>
+    const CLIENTES_API  = '/app/front/clientes';
+    let clientes = [];
+
+    const form = document.getElementById('clienteForm');
+    const cardRegistro = document.getElementById('cardRegistro');
+    const cardConfirmacion = document.getElementById('cardConfirmacion');
+    const selectEliminar = document.getElementById('cliEliminarSelect');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarClientes();
+
+      form.addEventListener('submit', onRegistrarCliente);
+      document.getElementById('btnEliminarCliente')
+        .addEventListener('click', onEliminarCliente);
+      document.getElementById('btnVolver')
+        .addEventListener('click', (e) => {
+          e.preventDefault();
+          cardConfirmacion.classList.add('hidden');
+          cardRegistro.classList.remove('hidden');
+        });
+    });
+
+    async function cargarClientes() {
+      try {
+        const resp = await fetch(CLIENTES_API);
+        if (!resp.ok) {
+          console.error('Error al listar clientes');
+          return;
+        }
+        clientes = await resp.json();
+        rellenarSelectEliminar();
+      } catch (err) {
+        console.error(err);
+        alert('Error de comunicación al cargar clientes');
+      }
+    }
+
+    function rellenarSelectEliminar() {
+      selectEliminar.innerHTML = '<option value="">-- Seleccione --</option>';
+      clientes.forEach(c => {
+        if (c.idCliente == null) return;
+        const opt = document.createElement('option');
+        opt.value = c.idCliente;
+        opt.textContent = `${c.idCliente} - ${c.nombre} (${c.email})`;
+        selectEliminar.appendChild(opt);
+      });
+    }
+
+    async function onRegistrarCliente(e) {
+      e.preventDefault();
+
+      const nombre   = document.getElementById('cliNombre').value.trim();
+      const email    = document.getElementById('cliEmail').value.trim();
+      const telefono = document.getElementById('cliTelefono').value.trim();
+
+      if (!nombre || !email) {
+        alert('Nombre y email son obligatorios.');
+        return;
+      }
+
+      const body = {
+        idCliente: null,
+        nombre: nombre,
+        email: email,
+        telefono: telefono || null
+      };
+
+      try {
+        const resp = await fetch(CLIENTES_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        if (!resp.ok) {
+          const msg = await resp.text();
+          alert('Error registrando el cliente:\n' + msg);
+          return;
+        }
+
+        document.getElementById('resNombre').textContent   = nombre;
+        document.getElementById('resTelefono').textContent = telefono || '-';
+        document.getElementById('resEmail').textContent    = email;
+
+        form.reset();
+        await cargarClientes(); // refresca el select de eliminar
+
+        cardRegistro.classList.add('hidden');
+        cardConfirmacion.classList.remove('hidden');
+      } catch (err) {
+        console.error(err);
+        alert('Error de comunicación con el servidor');
+      }
+    }
+
+    async function onEliminarCliente() {
+      const id = selectEliminar.value;
+      if (!id) {
+        alert('Seleccione un cliente para eliminar.');
+        return;
+      }
+      const seleccionado = clientes.find(c => String(c.idCliente) === String(id));
+      const nombre = seleccionado ? seleccionado.nombre : id;
+
+      if (!confirm(`¿Eliminar el cliente "${nombre}" (ID ${id})?`)) {
+        return;
+      }
+
+      try {
+        const resp = await fetch(`${CLIENTES_API}/${id}`, { method: 'DELETE' });
+        if (!resp.ok) {
+          const msg = await resp.text();
+          alert('No se pudo eliminar el cliente:\n' + msg);
+          return;
+        }
+        alert('Cliente eliminado correctamente.');
+        await cargarClientes();
+      } catch (err) {
+        console.error(err);
+        alert('Error de comunicación al eliminar el cliente');
+      }
+    }
+</script>
+
+</body>
+</html>
