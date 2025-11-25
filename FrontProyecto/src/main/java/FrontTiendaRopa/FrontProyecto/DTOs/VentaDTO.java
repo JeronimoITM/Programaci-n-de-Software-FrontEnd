@@ -20,7 +20,7 @@ public class VentaDTO {
     @Builder.Default
     private List<VentaItemDTO> items = new ArrayList<>();
 
-    /** Mapper desde la entidad  */
+    /** Mapper desde la entidad */
     public static VentaDTO fromEntity(Venta v) {
         VentaDTO dto = VentaDTO.builder()
                 .id(v.getId())
