@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Venta</title>
+    <style>
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          background: #e6f5ff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+        }
+        .card {
+          background: #ffffff;
+          border-radius: 16px;
+          box-shadow: 0 18px 45px rgba(15, 23, 42, 0.15);
+          padding: 28px 36px;
+          max-width: 720px;
+          width: 100%;
+        }
+        .card h1 {
+          margin: 0 0 4px;
+          font-size: 24px;
+          text-align: center;
+          color: #111827;
+        }
+        .card p.sub {
+          margin: 0 0 16px;
+          font-size: 14px;
+          color: #6b7280;
+          text-align: center;
+        }
+        .top-link {
+          text-align: center;
+          margin-bottom: 8px;
+        }
+        .top-link a {
+          font-size: 13px;
+          color: #4f46e5;
+          text-decoration: none;
+        }
+        .top-link a:hover { text-decoration: underline; }
+        .grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 16px 24px;
+          margin-bottom: 20px;
+        }
+        .field {
+          display: flex;
+          flex-direction: column;
+          font-size: 13px;
+          color: #4b5563;
+        }
+        .field input, .field select {
+          margin-top: 4px;
+          padding: 8px 10px;
+          border-radius: 8px;
+          border: 1px solid #d1d5db;
+          font-size: 14px;
+          outline: none;
+          transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .field input:focus, .field select:focus {
+          border-color: #4f46e5;
+          box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+        }
+        .full-row { grid-column: span 2; }
+        .btn-primary {
+          width: 100%;
+          padding: 10px 16px;
+          border-radius: 999px;
+          border: none;
+          background: #4f46e5;
+          color: white;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          margin-top: 4px;
+        }
+        .btn-primary:hover { background: #4338ca; }
+        .btn-link {
+          display: inline-block;
+          margin-top: 16px;
+          font-size: 13px;
+          color: #4f46e5;
+          text-decoration: none;
+          text-align: center;
+        }
+        .btn-link:hover { text-decoration: underline; }
+        .divider {
+          margin: 16px 0 20px;
+          border-top: 1px solid #e5e7eb;
+        }
+        .success-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          justify-content: center;
+          margin-bottom: 8px;
+        }
+        .success-icon {
+          width: 30px;
+          height: 30px;
+          border-radius: 999px;
+          border: 2px solid #16a34a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #16a34a;
+          font-weight: bold;
+          font-size: 18px;
+        }
+        .summary-box {
+          background: #ecfdf3;
+          border-radius: 10px;
+          border: 1px solid #bbf7d0;
+          padding: 14px 16px;
+          font-size: 13px;
+          color: #374151;
+          line-height: 1.5;
+        }
+        .summary-row + .summary-row { margin-top: 4px; }
+        .label { font-weight: 600; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="card" id="cardVentaRegistro">
+    <div class="top-link">
+        <a href="index.html">← Volver al menú principal</a>
+    </div>
+    <h1>Registro de Venta (DTO)</h1>
+    <p class="sub">Seleccione el cliente, el producto y la fecha para registrar la venta.</p>
+
+    <form id="ventaForm">
+        <div class="grid">
+            <div class="field">
+                <label>Cliente</label>
+                <select id="ventaCliente" required>
+                    <option value="">-- Seleccione --</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Producto</label>
+                <select id="ventaProducto" required>
+                    <option value="">-- Seleccione --</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Cantidad</label>
+                <input type="number" id="ventaCantidad" min="1" value="1" required>
+            </div>
+            <div class="field">
+                <label>Fecha de venta</label>
+                <input type="date" id="ventaFecha">
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary">Registrar Venta</button>
+    </form>
+</div>
+
+<div class="card hidden" id="cardVentaConfirmacion">
+    <div class="success-header">
+        <div class="success-icon">✓</div>
+        <h1>¡Venta Registrada!</h1>
+    </div>
+    <p class="sub">
+        Los datos de la venta se han registrado correctamente:
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="summary-box">
+        <div class="summary-row">
+            <div><span class="label">Cliente:</span> <span id="vResCliente"></span></div>
+            <div><span class="label">Producto:</span> <span id="vResProducto"></span></div>
+        </div>
+        <div class="summary-row">
+            <div><span class="label">Cantidad:</span> <span id="vResCantidad"></span></div>
+            <div><span class="label">Total venta:</span> <span id="vResTotal"></span></div>
+        </div>
+        <div class="summary-row">
+            <div><span class="label">Fecha registrada:</span> <span id="vResFecha"></span></div>
+        </div>
+    </div>
+
+    <a href="#" class="btn-link" id="vBtnVolverForm">← Volver a registrar</a><br>
+    <a href="index.html" class="btn-link">Volver al menú principal</a>
+</div>
+
+<script>
+    const CLIENTES_API  = '/app/front/clientes';
+    const PRODUCTOS_API = '/app/front/productos';
+    const VENTAS_API    = '/app/front/ventas';
+
+
+        const selCliente = document.getElementById('ventaCliente');
+        const selProducto = document.getElementById('ventaProducto');
+        const fechaInput = document.getElementById('ventaFecha');
+
+        document.addEventListener('DOMContentLoaded', () => {
+          // Fecha por defecto: hoy
+          const hoy = new Date().toISOString().slice(0, 10);
+          fechaInput.value = hoy;
+
+          cargarClientes();
+          cargarProductos();
+
+          const form = document.getElementById('ventaForm');
+          form.addEventListener('submit', onSubmitVenta);
+
+          document.getElementById('vBtnVolverForm').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('cardVentaConfirmacion').classList.add('hidden');
+            document.getElementById('cardVentaRegistro').classList.remove('hidden');
+          });
+        });
+
+        async function cargarClientes() {
+          try {
+            const resp = await fetch(CLIENTES_API);
+            if (!resp.ok) {
+              console.error('Error cargando clientes');
+              return;
+            }
+            const clientes = await resp.json();
+            selCliente.innerHTML = '<option value="">-- Seleccione --</option>';
+            clientes.forEach(c => {
+              if (c.idCliente == null) return;
+              const opt = document.createElement('option');
+              opt.value = c.idCliente;
+              opt.textContent = c.nombre;
+              selCliente.appendChild(opt);
+            });
+          } catch (err) {
+            console.error(err);
+            alert('Error de comunicación al cargar clientes');
+          }
+        }
+
+        async function cargarProductos() {
+          try {
+            const resp = await fetch(PRODUCTOS_API);
+            if (!resp.ok) {
+              console.error('Error cargando productos');
+              return;
+            }
+            const productos = await resp.json();
+            selProducto.innerHTML = '<option value="">-- Seleccione --</option>';
+            productos.forEach(p => {
+              if (p.productoId == null) return;
+              const opt = document.createElement('option');
+              opt.value = p.productoId;
+              opt.textContent = p.nombre ?? ('Producto ' + p.productoId);
+              selProducto.appendChild(opt);
+            });
+          } catch (err) {
+            console.error(err);
+            alert('Error de comunicación al cargar productos');
+          }
+        }
+
+        async function onSubmitVenta(e) {
+          e.preventDefault();
+          const clienteId  = parseInt(selCliente.value);
+          const productoId = parseInt(selProducto.value);
+          const cantidad   = parseInt(document.getElementById('ventaCantidad').value);
+          const fechaVenta = fechaInput.value || null; // yyyy-MM-dd
+
+          if (!clienteId || !productoId || !cantidad) {
+            alert('Selecciona cliente, producto y cantidad');
+            return;
+          }
+
+          const body = { clienteId, productoId, cantidad, fechaVenta };
+
+          try {
+            const resp = await fetch(VENTAS_API, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(body)
+            });
+
+            if (!resp.ok) {
+              const msg = await resp.text();
+              alert('Error registrando la venta:\n' + msg);
+              return;
+            }
+
+            const data = await resp.json(); // VentaResponseDTO
+            const fechaMostrada = data.fechaCompra
+                  ? new Date(data.fechaCompra).toLocaleString()
+                  : (fechaVenta || '');
+
+            document.getElementById('vResCliente').textContent  = data.clienteNombre ?? '';
+            document.getElementById('vResProducto').textContent = data.productoNombre ?? '';
+            document.getElementById('vResCantidad').textContent = data.cantidad ?? cantidad;
+            document.getElementById('vResTotal').textContent    = data.total ?? '';
+            document.getElementById('vResFecha').textContent    = fechaMostrada;
+
+            document.getElementById('cardVentaRegistro').classList.add('hidden');
+            document.getElementById('cardVentaConfirmacion').classList.remove('hidden');
+          } catch (err) {
+            console.error(err);
+            alert('Error de comunicación con el servidor de ventas');
+          }
+        }
+</script>
+
+</body>
+</html>

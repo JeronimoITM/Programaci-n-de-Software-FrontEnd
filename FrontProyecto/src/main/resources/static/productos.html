@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Producto</title>
+    <style>
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          background: #e6f5ff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+        }
+        .card {
+          background: #ffffff;
+          border-radius: 16px;
+          box-shadow: 0 18px 45px rgba(15, 23, 42, 0.15);
+          padding: 28px 36px;
+          max-width: 640px;
+          width: 100%;
+        }
+        .card h1 {
+          margin: 0 0 8px;
+          font-size: 24px;
+          text-align: center;
+          color: #111827;
+        }
+        .card p.sub {
+          margin: 0 0 20px;
+          font-size: 14px;
+          color: #6b7280;
+          text-align: center;
+        }
+        .top-link {
+          text-align: center;
+          margin-bottom: 8px;
+          font-size: 13px;
+        }
+        .top-link a {
+          color: #4f46e5;
+          text-decoration: none;
+        }
+        .top-link a:hover { text-decoration: underline; }
+
+        .grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 16px 24px;
+          margin-bottom: 24px;
+        }
+        .field {
+          display: flex;
+          flex-direction: column;
+          font-size: 13px;
+          color: #4b5563;
+        }
+        .field input, .field select {
+          margin-top: 4px;
+          padding: 8px 10px;
+          border-radius: 8px;
+          border: 1px solid #d1d5db;
+          font-size: 14px;
+          outline: none;
+          transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .field input:focus, .field select:focus {
+          border-color: #4f46e5;
+          box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+        }
+        .full-row { grid-column: span 2; }
+        .btn-primary {
+          width: 100%;
+          padding: 10px 16px;
+          border-radius: 999px;
+          border: none;
+          background: #4f46e5;
+          color: white;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          margin-top: 4px;
+        }
+        .btn-primary:hover { background: #4338ca; }
+        .btn-danger {
+          width: 100%;
+          padding: 8px 14px;
+          border-radius: 999px;
+          border: none;
+          background: #dc2626;
+          color: white;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          margin-top: 6px;
+        }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-link {
+          display: inline-block;
+          margin-top: 16px;
+          font-size: 13px;
+          color: #4f46e5;
+          text-decoration: none;
+          text-align: center;
+        }
+        .btn-link:hover { text-decoration: underline; }
+        .divider {
+          margin: 20px 0;
+          border-top: 1px solid #e5e7eb;
+        }
+        .sub-title {
+          font-size: 15px;
+          font-weight: 600;
+          margin: 0 0 6px;
+          color: #111827;
+        }
+        .sub-small {
+          margin: 0 0 12px;
+          font-size: 13px;
+          color: #6b7280;
+        }
+
+        .success-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          justify-content: center;
+          margin-bottom: 8px;
+        }
+        .success-icon {
+          width: 30px;
+          height: 30px;
+          border-radius: 999px;
+          border: 2px solid #16a34a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #16a34a;
+          font-weight: bold;
+          font-size: 18px;
+        }
+        .summary-box {
+          background: #ecfdf3;
+          border-radius: 10px;
+          border: 1px solid #bbf7d0;
+          padding: 14px 16px;
+          font-size: 13px;
+          color: #374151;
+          line-height: 1.5;
+        }
+        .summary-row + .summary-row { margin-top: 4px; }
+        .label { font-weight: 600; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="card" id="cardProdRegistro">
+    <div class="top-link">
+        <a href="index.html">← Volver al menú principal</a>
+    </div>
+
+    <h1>Registro de Producto (DTO)</h1>
+    <p class="sub">Ingrese la información básica del producto.</p>
+
+    <!-- FORMULARIO REGISTRO -->
+    <form id="productoForm">
+        <div class="grid">
+            <div class="field full-row">
+                <label>Nombre del producto</label>
+                <input type="text" id="prodNombre" required>
+            </div>
+            <div class="field">
+                <label>Código de barra</label>
+                <input type="text" id="prodCodigo">
+            </div>
+            <div class="field">
+                <label>Precio de venta</label>
+                <input type="number" id="prodPrecio" step="0.01" required>
+            </div>
+        </div>
+        <button type="submit" class="btn-primary">Registrar Producto</button>
+    </form>
+
+    <!-- BLOQUE ELIMINAR -->
+    <div class="divider"></div>
+    <h2 class="sub-title">Eliminar producto</h2>
+    <p class="sub-small">Seleccione un producto existente para eliminarlo.</p>
+
+    <div class="field full-row">
+        <label>Producto</label>
+        <select id="prodEliminarSelect">
+            <option value="">-- Seleccione --</option>
+        </select>
+    </div>
+    <button type="button" class="btn-danger" id="btnEliminarProducto">Eliminar producto</button>
+</div>
+
+<div class="card hidden" id="cardProdConfirmacion">
+    <div class="success-header">
+        <div class="success-icon">✓</div>
+        <h1>¡Producto Registrado!</h1>
+    </div>
+    <p class="sub">
+        Los datos del nuevo producto han sido procesados correctamente:
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="summary-box">
+        <div class="summary-row">
+            <div><span class="label">Nombre:</span> <span id="pResNombre"></span></div>
+        </div>
+        <div class="summary-row">
+            <div><span class="label">Código de barra:</span> <span id="pResCodigo"></span></div>
+        </div>
+        <div class="summary-row">
+            <div><span class="label">Precio de venta:</span> <span id="pResPrecio"></span></div>
+        </div>
+    </div>
+
+    <a href="#" class="btn-link" id="pBtnVolver">← Volver a registrar</a><br>
+    <a href="index.html" class="btn-link">Volver al menú principal</a>
+</div>
+
+<script>
+    const PRODUCTOS_API = '/app/front/productos';
+    let productos = [];
+
+    const formP = document.getElementById('productoForm');
+    const cardReg = document.getElementById('cardProdRegistro');
+    const cardOk  = document.getElementById('cardProdConfirmacion');
+    const selectEliminar = document.getElementById('prodEliminarSelect');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarProductos();
+
+      formP.addEventListener('submit', onRegistrarProducto);
+      document.getElementById('btnEliminarProducto')
+        .addEventListener('click', onEliminarProducto);
+      document.getElementById('pBtnVolver')
+        .addEventListener('click', (e) => {
+          e.preventDefault();
+          cardOk.classList.add('hidden');
+          cardReg.classList.remove('hidden');
+        });
+    });
+
+    async function cargarProductos() {
+      try {
+        const resp = await fetch(PRODUCTOS_API);
+        if (!resp.ok) {
+          console.error('Error al listar productos');
+          return;
+        }
+        productos = await resp.json();
+        rellenarSelectEliminarProductos();
+      } catch (err) {
+        console.error(err);
+        alert('Error de comunicación al cargar productos');
+      }
+    }
+
+    function rellenarSelectEliminarProductos() {
+      selectEliminar.innerHTML = '<option value="">-- Seleccione --</option>';
+      productos.forEach(p => {
+        if (p.productoId == null) return;
+        const opt = document.createElement('option');
+        const nombre = p.nombre ?? `Producto ${p.productoId}`;
+        const codigo = p.codigoBarra ? ` - ${p.codigoBarra}` : '';
+        opt.value = p.productoId;
+        opt.textContent = `${p.productoId} - ${nombre}${codigo}`;
+        selectEliminar.appendChild(opt);
+      });
+    }
+
+    async function onRegistrarProducto(e) {
+      e.preventDefault();
+
+      const nombre = document.getElementById('prodNombre').value.trim();
+      const codigo = document.getElementById('prodCodigo').value.trim();
+      const precio = document.getElementById('prodPrecio').value;
+
+      if (!nombre || !precio) {
+        alert('Nombre y precio son obligatorios.');
+        return;
+      }
+
+      const body = {
+        nombre: nombre,
+        codigoBarra: codigo || null,
+        categoriaId: null,
+        talla: null,
+        color: null,
+        proveedorId: null,
+        precioVenta: parseFloat(precio)
+      };
+
+      try {
+        const resp = await fetch(PRODUCTOS_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+
+        if (!resp.ok) {
+          const msg = await resp.text();
+          alert('Error registrando el producto:\n' + msg);
+          return;
+        }
+
+        document.getElementById('pResNombre').textContent  = nombre;
+        document.getElementById('pResCodigo').textContent  = codigo || '-';
+        document.getElementById('pResPrecio').textContent  = precio;
+
+        formP.reset();
+        await cargarProductos(); // refresca select eliminar
+
+        cardReg.classList.add('hidden');
+        cardOk.classList.remove('hidden');
+      } catch (err) {
+        console.error(err);
+        alert('Error de comunicación con el servidor');
+      }
+    }
+
+    async function onEliminarProducto() {
+      const id = selectEliminar.value;
+      if (!id) {
+        alert('Seleccione un producto para eliminar.');
+        return;
+      }
+      const seleccionado = productos.find(p => String(p.productoId) === String(id));
+      const nombre = seleccionado ? (seleccionado.nombre ?? id) : id;
+
+      if (!confirm(`¿Eliminar el producto "${nombre}" (ID ${id})?`)) {
+        return;
+      }
+
+      try {
+        const resp = await fetch(`${PRODUCTOS_API}/${id}`, { method: 'DELETE' });
+        if (!resp.ok) {
+          const msg = await resp.text();
+          alert('No se pudo eliminar el producto:\n' + msg);
+          return;
+        }
+        alert('Producto eliminado correctamente.');
+        await cargarProductos();
+      } catch (err) {
+        console.error(err);
+        alert('Error de comunicación al eliminar el producto');
+      }
+    }
+</script>
+
+</body>
+</html>
