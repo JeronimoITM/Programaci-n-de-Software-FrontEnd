@@ -19,7 +19,7 @@
           border-radius: 16px;
           box-shadow: 0 18px 45px rgba(15, 23, 42, 0.15);
           padding: 28px 36px;
-          max-width: 640px;
+          max-width: 900px; /* más ancho por la tabla */
           width: 100%;
         }
         .card h1 {
@@ -71,6 +71,7 @@
           box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
         }
         .full-row { grid-column: span 2; }
+
         .btn-primary {
           width: 100%;
           padding: 10px 16px;
@@ -84,6 +85,7 @@
           margin-top: 4px;
         }
         .btn-primary:hover { background: #4338ca; }
+
         .btn-danger {
           width: 100%;
           padding: 8px 14px;
@@ -97,6 +99,23 @@
           margin-top: 6px;
         }
         .btn-danger:hover { background: #b91c1c; }
+
+        .btn-secondary {
+          width: 100%;
+          padding: 9px 14px;
+          border-radius: 999px;
+          border: 1px solid #d1d5db;
+          background: #ffffff;
+          color: #111827;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          margin-top: 6px;
+        }
+        .btn-secondary:hover {
+          background: #f9fafb;
+        }
+
         .btn-link {
           display: inline-block;
           margin-top: 16px;
@@ -106,6 +125,7 @@
           text-align: center;
         }
         .btn-link:hover { text-decoration: underline; }
+
         .divider {
           margin: 20px 0;
           border-top: 1px solid #e5e7eb;
@@ -153,6 +173,43 @@
         .summary-row + .summary-row { margin-top: 4px; }
         .label { font-weight: 600; }
         .hidden { display: none; }
+
+        /* Tabla de listado */
+        .table-wrap {
+          overflow: auto;
+          border: 1px solid #e5e7eb;
+          border-radius: 12px;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          min-width: 720px;
+        }
+        thead th {
+          background: #f9fafb;
+          text-align: left;
+          font-size: 13px;
+          color: #111827;
+          padding: 10px 12px;
+          border-bottom: 1px solid #e5e7eb;
+          white-space: nowrap;
+        }
+        tbody td {
+          padding: 10px 12px;
+          border-bottom: 1px solid #f1f5f9;
+          font-size: 13px;
+          color: #374151;
+          white-space: nowrap;
+        }
+        tbody tr:hover {
+          background: #f9fafb;
+        }
+        .muted {
+          color: #6b7280;
+          font-size: 12px;
+          margin-top: 8px;
+          text-align: right;
+        }
     </style>
 </head>
 <body>
@@ -196,6 +253,36 @@
         </select>
     </div>
     <button type="button" class="btn-danger" id="btnEliminarCliente">Eliminar cliente</button>
+
+    <!-- BLOQUE LISTAR -->
+    <div class="divider"></div>
+    <h2 class="sub-title">Listar clientes</h2>
+    <p class="sub-small">todos los clientes registrados .</p>
+
+    <button type="button" class="btn-secondary" id="btnListarClientes">Listar / Actualizar</button>
+
+    <div class="divider" style="margin-top:14px;"></div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+            <tr>
+                <th style="width:90px;">ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th style="width:160px;">Teléfono</th>
+            </tr>
+            </thead>
+            <tbody id="tbodyClientes">
+            <tr>
+                <td colspan="4" class="muted" style="text-align:center; padding:16px;">
+                    Presiona “Listar / Actualizar” para cargar la tabla.
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="muted" id="lblTotal"></div>
 </div>
 
 <!-- TARJETA DE CONFIRMACIÓN -->
@@ -235,18 +322,23 @@
     const cardConfirmacion = document.getElementById('cardConfirmacion');
     const selectEliminar = document.getElementById('cliEliminarSelect');
 
+    const tbodyClientes = document.getElementById('tbodyClientes');
+    const lblTotal = document.getElementById('lblTotal');
+
     document.addEventListener('DOMContentLoaded', () => {
       cargarClientes();
 
       form.addEventListener('submit', onRegistrarCliente);
-      document.getElementById('btnEliminarCliente')
-        .addEventListener('click', onEliminarCliente);
-      document.getElementById('btnVolver')
-        .addEventListener('click', (e) => {
-          e.preventDefault();
-          cardConfirmacion.classList.add('hidden');
-          cardRegistro.classList.remove('hidden');
-        });
+      document.getElementById('btnEliminarCliente').addEventListener('click', onEliminarCliente);
+      document.getElementById('btnListarClientes').addEventListener('click', () => {
+        renderTablaClientes(clientes);
+      });
+
+      document.getElementById('btnVolver').addEventListener('click', (e) => {
+        e.preventDefault();
+        cardConfirmacion.classList.add('hidden');
+        cardRegistro.classList.remove('hidden');
+      });
     });
 
     async function cargarClientes() {
@@ -258,6 +350,8 @@
         }
         clientes = await resp.json();
         rellenarSelectEliminar();
+        // opcional: refrescar tabla automáticamente
+        // renderTablaClientes(clientes);
       } catch (err) {
         console.error(err);
         alert('Error de comunicación al cargar clientes');
@@ -273,6 +367,36 @@
         opt.textContent = `${c.idCliente} - ${c.nombre} (${c.email})`;
         selectEliminar.appendChild(opt);
       });
+    }
+
+    function renderTablaClientes(lista) {
+      if (!Array.isArray(lista) || lista.length === 0) {
+        tbodyClientes.innerHTML = `
+          <tr>
+            <td colspan="4" class="muted" style="text-align:center; padding:16px;">
+              No hay clientes para mostrar.
+            </td>
+          </tr>`;
+        lblTotal.textContent = '';
+        return;
+      }
+
+      tbodyClientes.innerHTML = lista.map(c => {
+        const id = c.idCliente ?? '';
+        const nombre = c.nombre ?? '';
+        const email = c.email ?? '';
+        const tel = c.telefono ?? '-';
+        return `
+          <tr>
+            <td>${id}</td>
+            <td>${escapeHtml(nombre)}</td>
+            <td>${escapeHtml(email)}</td>
+            <td>${escapeHtml(tel)}</td>
+          </tr>
+        `;
+      }).join('');
+
+      lblTotal.textContent = `Total clientes: ${lista.length}`;
     }
 
     async function onRegistrarCliente(e) {
@@ -312,7 +436,8 @@
         document.getElementById('resEmail').textContent    = email;
 
         form.reset();
-        await cargarClientes(); // refresca el select de eliminar
+        await cargarClientes(); // refresca select y lista en memoria
+        renderTablaClientes(clientes); // refresca tabla
 
         cardRegistro.classList.add('hidden');
         cardConfirmacion.classList.remove('hidden');
@@ -331,9 +456,7 @@
       const seleccionado = clientes.find(c => String(c.idCliente) === String(id));
       const nombre = seleccionado ? seleccionado.nombre : id;
 
-      if (!confirm(`¿Eliminar el cliente "${nombre}" (ID ${id})?`)) {
-        return;
-      }
+      if (!confirm(`¿Eliminar el cliente "${nombre}" (ID ${id})?`)) return;
 
       try {
         const resp = await fetch(`${CLIENTES_API}/${id}`, { method: 'DELETE' });
@@ -344,10 +467,20 @@
         }
         alert('Cliente eliminado correctamente.');
         await cargarClientes();
+        renderTablaClientes(clientes);
       } catch (err) {
         console.error(err);
         alert('Error de comunicación al eliminar el cliente');
       }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
     }
 </script>
 
